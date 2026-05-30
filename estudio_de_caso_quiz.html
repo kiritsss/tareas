@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="es" translate="no" class="notranslate">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google" content="notranslate">
+<title>Cuestionario: Estudio de Caso — IESAM</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Nunito:wght@400;600;700&display=swap');
+
+  :root {
+    --cream: #fdf6e3;
+    --cream-dark: #f5ead0;
+    --cream-border: #e8d8b0;
+    --gold: #8B6914;
+    --gold-light: #c9a227;
+    --purple: #6c3fc5;
+    --purple-light: #9b6dff;
+    --pink: #f4a7c3;
+    --blue-pastel: #a8d8ea;
+    --green-correct: #2d6a4f;
+    --green-bg: #d8f3dc;
+    --red-wrong: #c1121f;
+    --red-bg: #ffe0e0;
+    --text-dark: #2c2c2c;
+    --text-mid: #555;
+    --card-shadow: 0 4px 18px rgba(0,0,0,0.10);
+    --star-color: #f4a261;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background-color: var(--cream);
+    background-image:
+      repeating-linear-gradient(
+        transparent,
+        transparent 27px,
+        #e8d8b090 27px,
+        #e8d8b090 28px
+      );
+    color: var(--text-dark);
+    min-height: 100vh;
+    padding: 0 0 60px 0;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: linear-gradient(135deg, #1a1a3e 0%, #2d1b6e 60%, #1a1a3e 100%);
+    padding: 28px 24px 22px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -30px; left: -30px;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: rgba(201,162,39,0.15);
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -20px; right: -20px;
+    width: 90px; height: 90px;
+    border-radius: 50%;
+    background: rgba(156,109,255,0.15);
+  }
+  .iesam-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .logo-diamond {
+    width: 36px; height: 36px;
+    background: var(--gold-light);
+    transform: rotate(45deg);
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .logo-diamond::after {
+    content: '✦';
+    color: #1a1a3e;
+    font-size: 18px;
+    transform: rotate(-45deg);
+    display: block;
+  }
+  .logo-text {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #fff;
+    letter-spacing: 2px;
+  }
+  .logo-sub {
+    font-size: 0.55rem;
+    color: #c9a227;
+    letter-spacing: 1.5px;
+    display: block;
+    text-align: left;
+    margin-top: -2px;
+  }
+  header h1 {
+    font-family: 'Caveat', cursive;
+    font-size: 2.1rem;
+    color: #fff;
+    font-weight: 700;
+    position: relative;
+    z-index: 1;
+  }
+  header p.subtitle {
+    font-size: 0.85rem;
+    color: #c9a227;
+    margin-top: 4px;
+    letter-spacing: 1px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── SCORE BAR ── */
+  .score-bar {
+    background: #1a1a3e;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+  .score-label {
+    font-family: 'Caveat', cursive;
+    font-size: 1.2rem;
+    color: #c9a227;
+    font-weight: 700;
+  }
+  .score-pills {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .pill {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    border: 2px solid rgba(255,255,255,0.3);
+    transition: all 0.3s ease;
+    font-size: 10px;
+    display: flex; align-items: center; justify-content: center;
+    color: transparent;
+  }
+  .pill.correct { background: #2d6a4f; border-color: #52b788; color: #fff; }
+  .pill.wrong   { background: #c1121f; border-color: #e63946; color: #fff; }
+  .score-count {
+    font-family: 'Caveat', cursive;
+    font-size: 1.3rem;
+    color: #fff;
+    font-weight: 700;
+    min-width: 70px;
+    text-align: right;
+  }
+
+  /* ── INSTRUCCIONES ── */
+  .instrucciones {
+    max-width: 820px;
+    margin: 24px auto 10px;
+    padding: 0 20px;
+  }
+  .instrucciones-card {
+    background: #fff;
+    border: 2px solid var(--cream-border);
+    border-radius: 16px;
+    padding: 16px 20px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    box-shadow: var(--card-shadow);
+  }
+  .instrucciones-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+  }
+  .instrucciones-card p {
+    font-size: 0.9rem;
+    color: var(--text-mid);
+    line-height: 1.6;
+  }
+  .instrucciones-card strong {
+    color: var(--purple);
+  }
+
+  /* ── QUESTIONS ── */
+  .questions-container {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 10px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .question-card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 22px 24px;
+    box-shadow: var(--card-shadow);
+    border: 2px solid var(--cream-border);
+    position: relative;
+    transition: border-color 0.3s;
+  }
+  .question-card.answered-correct { border-color: #52b788; }
+  .question-card.answered-wrong   { border-color: #e63946; }
+
+  /* Decoraciones estilo notebook */
+  .question-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 24px;
+    width: 2px; height: 100%;
+    background: var(--pink);
+    opacity: 0.5;
+    border-radius: 2px;
+  }
+
+  .q-number {
+    font-family: 'Caveat', cursive;
+    font-size: 0.95rem;
+    color: var(--purple);
+    font-weight: 700;
+    margin-bottom: 6px;
+    padding-left: 14px;
+  }
+  .q-text {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 16px;
+    line-height: 1.5;
+    padding-left: 14px;
+  }
+
+  /* Caso especial (reactivos 14 y 15) */
+  .case-box {
+    background: var(--cream-dark);
+    border-left: 4px solid var(--gold-light);
+    border-radius: 0 10px 10px 0;
+    padding: 14px 16px;
+    margin: 0 0 16px 14px;
+    font-size: 0.9rem;
+    font-style: italic;
+    color: var(--text-dark);
+    line-height: 1.6;
+  }
+  .case-label {
+    font-family: 'Caveat', cursive;
+    font-size: 0.9rem;
+    color: var(--gold);
+    font-weight: 700;
+    font-style: normal;
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  /* Opciones */
+  .options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-left: 14px;
+  }
+  .option-btn {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 2px solid var(--cream-border);
+    background: var(--cream);
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.92rem;
+    color: var(--text-dark);
+    text-align: left;
+    transition: all 0.2s ease;
+    width: 100%;
+    line-height: 1.4;
+  }
+  .option-btn:hover:not(:disabled) {
+    border-color: var(--purple-light);
+    background: #f3eeff;
+    transform: translateX(3px);
+  }
+  .option-btn:disabled { cursor: default; transform: none; }
+
+  .option-letter {
+    font-family: 'Caveat', cursive;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--purple);
+    flex-shrink: 0;
+    width: 22px;
+  }
+
+  .option-btn.correct {
+    background: var(--green-bg);
+    border-color: #52b788;
+    color: var(--green-correct);
+  }
+  .option-btn.correct .option-letter { color: var(--green-correct); }
+
+  .option-btn.wrong {
+    background: var(--red-bg);
+    border-color: #e63946;
+    color: var(--red-wrong);
+  }
+  .option-btn.wrong .option-letter { color: var(--red-wrong); }
+
+  .option-btn.reveal-correct {
+    background: #eaf7ef;
+    border-color: #74c69d;
+    color: var(--green-correct);
+  }
+  .option-btn.reveal-correct .option-letter { color: var(--green-correct); }
+
+  /* Feedback */
+  .feedback-box {
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 0.87rem;
+    line-height: 1.5;
+    display: none;
+    padding-left: 28px;
+  }
+  .feedback-box.show { display: block; }
+  .feedback-box.fb-correct {
+    background: var(--green-bg);
+    color: var(--green-correct);
+    border-left: 4px solid #52b788;
+  }
+  .feedback-box.fb-wrong {
+    background: var(--red-bg);
+    color: var(--red-wrong);
+    border-left: 4px solid #e63946;
+  }
+  .feedback-icon { margin-right: 6px; }
+
+  /* ── RESULTADO FINAL ── */
+  .resultado-card {
+    max-width: 820px;
+    margin: 10px auto 0;
+    padding: 0 20px;
+    display: none;
+  }
+  .resultado-card.show { display: block; }
+  .resultado-inner {
+    background: linear-gradient(135deg, #1a1a3e, #2d1b6e);
+    border-radius: 20px;
+    padding: 32px 28px;
+    text-align: center;
+    color: #fff;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  }
+  .resultado-title {
+    font-family: 'Caveat', cursive;
+    font-size: 2rem;
+    color: #c9a227;
+    margin-bottom: 10px;
+  }
+  .resultado-score {
+    font-family: 'Caveat', cursive;
+    font-size: 4rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+    margin: 10px 0;
+  }
+  .resultado-score span { color: #c9a227; }
+  .resultado-msg {
+    font-size: 1rem;
+    color: #e0d0ff;
+    margin-bottom: 24px;
+    line-height: 1.6;
+  }
+  .stars {
+    font-size: 2.2rem;
+    margin: 10px 0 20px;
+    letter-spacing: 6px;
+  }
+
+  /* ── BOTONES ── */
+  .btn-reset {
+    display: block;
+    margin: 0 auto;
+    padding: 13px 36px;
+    border-radius: 50px;
+    border: none;
+    background: var(--gold-light);
+    color: #1a1a3e;
+    font-family: 'Caveat', cursive;
+    font-size: 1.3rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 14px rgba(201,162,39,0.4);
+  }
+  .btn-reset:hover {
+    background: #e6b82a;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(201,162,39,0.5);
+  }
+
+  .reset-container {
+    max-width: 820px;
+    margin: 24px auto 0;
+    padding: 0 20px;
+    text-align: center;
+  }
+
+  /* Decoraciones flotantes */
+  .deco {
+    position: fixed;
+    pointer-events: none;
+    opacity: 0.5;
+    font-size: 1.2rem;
+    z-index: 0;
+  }
+
+  /* Stars decorativas */
+  .star-deco {
+    color: var(--star-color);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.6rem; }
+    .score-pills { gap: 4px; }
+    .pill { width: 18px; height: 18px; font-size: 9px; }
+    .question-card { padding: 16px 14px; }
+    .q-text { font-size: 0.95rem; }
+    .option-btn { font-size: 0.88rem; padding: 10px 12px; }
+    .resultado-score { font-size: 3rem; }
+  }
+
+  /* Animación de entrada */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .question-card {
+    animation: fadeUp 0.4s ease both;
+  }
+</style>
+</head>
+<body oncontextmenu="return false" oncopy="return false" onpaste="return false" oncut="return false">
+
+<!-- Decoraciones notebook -->
+<span class="deco star-deco" style="top:120px;right:30px;">★</span>
+<span class="deco star-deco" style="top:300px;left:20px;font-size:0.8rem;">✦</span>
+<span class="deco" style="top:500px;right:40px;opacity:0.3;font-size:1.5rem;color:#f4a7c3;">✿</span>
+<span class="deco star-deco" style="top:800px;left:30px;font-size:1rem;">★</span>
+<span class="deco" style="top:1200px;right:25px;opacity:0.3;font-size:1.2rem;color:#a8d8ea;">✦</span>
+
+<!-- HEADER -->
+<header>
+  <div class="iesam-logo">
+    <div class="logo-diamond"></div>
+    <div class="logo-text">
+      IESAM
+      <span class="logo-sub">INSTITUTO DE ESTUDIOS SUPERIORES ANGLO MEXICANO</span>
+    </div>
+  </div>
+  <h1>Estudio de Caso</h1>
+  <p class="subtitle">Investigación Educativa II · Dra. Ma. de Jesús Aguilar González</p>
+</header>
+
+<!-- SCORE BAR -->
+<div class="score-bar">
+  <span class="score-label">Progreso</span>
+  <div class="score-pills" id="scorePills"></div>
+  <span class="score-count" id="scoreCount">0 / 15</span>
+</div>
+
+<!-- INSTRUCCIONES -->
+<div class="instrucciones">
+  <div class="instrucciones-card">
+    <span class="instrucciones-icon">🔍</span>
+    <p>Lee cada reactivo con atención y selecciona la <strong>respuesta correcta</strong>. Recibirás retroalimentación inmediata. El orden de las opciones varía en cada intento. ¡Mucho éxito!</p>
+  </div>
+</div>
+
+<!-- PREGUNTAS -->
+<div class="questions-container" id="questionsContainer"></div>
+
+<!-- RESULTADO FINAL -->
+<div class="resultado-card" id="resultadoCard">
+  <div class="resultado-inner">
+    <div class="resultado-title">Resultado Final</div>
+    <div class="stars" id="resultStars">☆☆☆</div>
+    <div class="resultado-score" id="resultScore">0 <span>/ 15</span></div>
+    <p class="resultado-msg" id="resultMsg"></p>
+    <button class="btn-reset" onclick="resetQuiz()">↺ Intentar de nuevo</button>
+  </div>
+</div>
+
+<!-- BOTÓN RESET -->
+<div class="reset-container" id="resetContainer" style="display:none;">
+  <button class="btn-reset" onclick="resetQuiz()">↺ Reiniciar cuestionario</button>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+//  DATOS DEL CUESTIONARIO
+// ═══════════════════════════════════════════════════
+
+const CASO_TEXTO = `Una alumna ejemplar ha bajado sus calificaciones en el último trimestre. Al investigar, se descubre que su hermano fue hospitalizado recientemente. Ella es la hermana mayor, era muy cercana a él, y su familia trabaja todo el día, por lo que debe cuidarse sola. Esta situación la ha desmotivado.`;
+
+const QUESTIONS = [
+  {
+    id: 1,
+    text: "¿Cuál de las siguientes definiciones describe mejor al estudio de caso?",
+    options: [
+      { text: "Una técnica estadística para generalizar resultados", correct: false, feedback: "Incorrecto. Las técnicas estadísticas son propias del paradigma cuantitativo y buscan generalizar. El estudio de caso es cualitativo y se centra en fenómenos específicos." },
+      { text: "Un método exclusivamente cuantitativo de recolección de datos", correct: false, feedback: "Incorrecto. El estudio de caso pertenece al paradigma cualitativo/interpretativo, no cuantitativo." },
+      { text: "Una investigación experimental controlada en laboratorio", correct: false, feedback: "Incorrecto. El estudio de caso se desarrolla en el mundo real, no en condiciones de laboratorio controladas." },
+      { text: "Un tipo de investigación empírica que toma como foco un fenómeno contemporáneo del mundo real", correct: true, feedback: "¡Correcto! Según Yin (2018), el estudio de caso es una investigación empírica que se enfoca en fenómenos contemporáneos tomados del mundo real." }
+    ]
+  },
+  {
+    id: 2,
+    text: "Según Yin (2018), ¿qué caracteriza al estudio de caso en cuanto a su objeto de estudio?",
+    options: [
+      { text: "Requiere siempre un grupo de control", correct: false, feedback: "Incorrecto. Los grupos de control son propios de diseños experimentales, no del estudio de caso." },
+      { text: "Los objetos de estudio pueden ser objetos o procesos tomados del mundo real", correct: true, feedback: "¡Correcto! Yin (2018) señala que los objetos de estudio pueden ser objetos o procesos extraídos del mundo real, no de laboratorio." },
+      { text: "Solo estudia individuos en contextos artificiales", correct: false, feedback: "Incorrecto. Precisamente lo opuesto: el estudio de caso trabaja con fenómenos naturales, no artificiales." },
+      { text: "Se enfoca únicamente en datos numéricos", correct: false, feedback: "Incorrecto. El estudio de caso utiliza datos cualitativos: observaciones, entrevistas, documentos, entre otros." }
+    ]
+  },
+  {
+    id: 3,
+    text: "¿Cuál es el propósito principal del estudio de caso según Green, Robson y Mertler?",
+    options: [
+      { text: "Confirmar hipótesis previamente establecidas", correct: false, feedback: "Incorrecto. Confirmar hipótesis es una función del paradigma cuantitativo/positivista, no del estudio de caso." },
+      { text: "Generalizar resultados a poblaciones amplias", correct: false, feedback: "Incorrecto. El estudio de caso no busca generalizar; se queda en el análisis del caso específico." },
+      { text: "Realizar mediciones controladas y repetibles", correct: false, feedback: "Incorrecto. Las mediciones controladas son propias de la investigación cuantitativa." },
+      { text: "Generar descripciones vívidas e identificar patrones de un fenómeno en su ambiente natural", correct: true, feedback: "¡Correcto! Green, Robson y Mertler señalan que el estudio de caso genera descripciones vívidas e identifica patrones del fenómeno en su contexto natural." }
+    ]
+  },
+  {
+    id: 4,
+    text: "¿A quién se atribuye el origen del concepto de paradigma en la investigación científica?",
+    options: [
+      { text: "Thomas Kuhn (1970)", correct: true, feedback: "¡Correcto! Thomas Kuhn introdujo el concepto de paradigma en 'La estructura de las revoluciones científicas' (1970), definiéndolo como un compromiso implícito de una comunidad de estudiosos con determinado marco conceptual." },
+      { text: "Ricoy (2006)", correct: false, feedback: "Incorrecto. Ricoy (2006) contribuyó al análisis de paradigmas de investigación, pero el concepto original es de Thomas Kuhn." },
+      { text: "Yin (2018)", correct: false, feedback: "Incorrecto. Yin es reconocido por su trabajo sobre metodología del estudio de caso, no por el concepto de paradigma." },
+      { text: "Cook y Reichardt (1986)", correct: false, feedback: "Incorrecto. Cook y Reichardt (1986) describieron las diferencias entre paradigmas cuantitativo y cualitativo, pero el concepto de paradigma lo acuñó Kuhn." }
+    ]
+  },
+  {
+    id: 5,
+    text: "¿Cuál fue la aportación central de Kuhn que dio origen al paradigma interpretativo?",
+    options: [
+      { text: "El desarrollo del método hipotético-deductivo", correct: false, feedback: "Incorrecto. El método hipotético-deductivo es anterior a Kuhn y pertenece al paradigma positivista." },
+      { text: "La generalización de resultados a poblaciones amplias", correct: false, feedback: "Incorrecto. La generalización es una característica del paradigma cuantitativo/positivista." },
+      { text: "La dimensión social para explicar los cambios de las teorías científicas y el concepto de paradigma como medio para explicar dichos cambios", correct: true, feedback: "¡Correcto! Kuhn introdujo la dimensión social en la ciencia y el paradigma como concepto explicativo del cambio científico, lo que abrió la puerta al paradigma interpretativo." },
+      { text: "La medición controlada de variables en laboratorio", correct: false, feedback: "Incorrecto. La medición controlada es característica del paradigma positivista, no de la aportación kuhniana." }
+    ]
+  },
+  {
+    id: 6,
+    text: "¿Cuál de las siguientes es una tipología del estudio de caso según su alcance?",
+    options: [
+      { text: "Cuantitativo y experimental", correct: false, feedback: "Incorrecto. El estudio de caso es cualitativo; cuantitativo y experimental no son tipos de estudio de caso." },
+      { text: "Positivista y crítico", correct: false, feedback: "Incorrecto. Positivista y crítico son paradigmas de investigación, no tipos de estudio de caso." },
+      { text: "Deductivo y confirmatorio", correct: false, feedback: "Incorrecto. Deductivo y confirmatorio son características del paradigma cuantitativo." },
+      { text: "Individual y múltiple", correct: true, feedback: "¡Correcto! El estudio de caso puede ser individual (un solo caso) o múltiple (varios casos), según su alcance y diseño." }
+    ]
+  },
+  {
+    id: 7,
+    text: "¿A qué paradigma de investigación corresponde principalmente el estudio de caso?",
+    options: [
+      { text: "Experimental", correct: false, feedback: "Incorrecto. El paradigma experimental pertenece a la investigación cuantitativa con grupos de control y variables manipuladas." },
+      { text: "Cualitativo / interpretativo", correct: true, feedback: "¡Correcto! El estudio de caso es de naturaleza cualitativa e interpretativa: subjetivo, orientado al proceso, holista y fundamentado en la realidad." },
+      { text: "Positivista", correct: false, feedback: "Incorrecto. El paradigma positivista busca medir, controlar y predecir; el estudio de caso busca comprender e interpretar." },
+      { text: "Hipotético-deductivo", correct: false, feedback: "Incorrecto. El razonamiento hipotético-deductivo es propio del paradigma cuantitativo." }
+    ]
+  },
+  {
+    id: 8,
+    text: "¿Qué estrategia de validación utiliza el estudio de caso para asegurar la calidad de sus datos?",
+    options: [
+      { text: "Pruebas de hipótesis nulas", correct: false, feedback: "Incorrecto. Las pruebas de hipótesis nulas son propias del análisis estadístico cuantitativo." },
+      { text: "Aleatorización de la muestra", correct: false, feedback: "Incorrecto. La aleatorización es un principio del diseño experimental cuantitativo." },
+      { text: "Análisis estadístico multivariado", correct: false, feedback: "Incorrecto. El análisis multivariado es una técnica cuantitativa incompatible con el diseño básico del estudio de caso." },
+      { text: "Triangulación de datos y de métodos", correct: true, feedback: "¡Correcto! El estudio de caso utiliza triangulación: de datos (diversas fuentes) y de métodos (diversos protocolos), para garantizar la validez de sus hallazgos." }
+    ]
+  },
+  {
+    id: 9,
+    text: "¿Cuáles son los instrumentos y técnicas más característicos del estudio de caso para recolectar datos?",
+    options: [
+      { text: "Observación, entrevistas y análisis de documentos provenientes de diversas fuentes", correct: true, feedback: "¡Correcto! El estudio de caso utiliza múltiples instrumentos cualitativos: observación naturalista, entrevistas y revisión de documentos de diversas fuentes para lograr la triangulación." },
+      { text: "Escalas de medición y cuestionarios cerrados únicamente", correct: false, feedback: "Incorrecto. Las escalas y cuestionarios cerrados son instrumentos cuantitativos. El estudio de caso privilegia instrumentos cualitativos más flexibles." },
+      { text: "Encuestas masivas y análisis estadístico", correct: false, feedback: "Incorrecto. Las encuestas masivas y el análisis estadístico son herramientas del paradigma cuantitativo." },
+      { text: "Experimentos controlados y pruebas estandarizadas", correct: false, feedback: "Incorrecto. Los experimentos controlados pertenecen al paradigma positivista/experimental." }
+    ]
+  },
+  {
+    id: 10,
+    text: "Según Azapagic y colaboradores, ¿cuál es el propósito de construir una base de datos en el estudio de caso?",
+    options: [
+      { text: "Reemplazar el marco teórico", correct: false, feedback: "Incorrecto. La base de datos complementa el marco teórico, no lo reemplaza. El marco teórico sigue siendo una fase esencial." },
+      { text: "Convertir los datos cualitativos en estadísticas", correct: false, feedback: "Incorrecto. El estudio de caso no busca convertir datos cualitativos en estadísticas; mantiene su naturaleza interpretativa." },
+      { text: "Poder adicionar, cruzar y comparar información proveniente de distintas fuentes", correct: true, feedback: "¡Correcto! Según Azapagic et al., la base de datos permite adicionar, cruzar y comparar información de distintas fuentes, facilitando la triangulación." },
+      { text: "Reducir el número de participantes necesarios", correct: false, feedback: "Incorrecto. La base de datos no tiene como función reducir participantes, sino organizar y cruzar la información recopilada." }
+    ]
+  },
+  {
+    id: 11,
+    text: "¿Cuáles son los cuatro elementos fundamentales que componen un estudio de caso?",
+    options: [
+      { text: "Paradigma, enfoque, método e instrumento", correct: false, feedback: "Incorrecto. Estos son componentes del diseño metodológico general, no los elementos fundamentales específicos del estudio de caso." },
+      { text: "Objetivo, marco teórico, encuesta y resultado", correct: false, feedback: "Incorrecto. La encuesta no es un elemento definitorio del estudio de caso, que es esencialmente cualitativo." },
+      { text: "Hipótesis, variable, muestra y estadística", correct: false, feedback: "Incorrecto. Estos son elementos del diseño cuantitativo, no del estudio de caso cualitativo." },
+      { text: "Caso, contexto, problema y datos", correct: true, feedback: "¡Correcto! Los cuatro elementos fundamentales del estudio de caso son: el caso (sujeto de estudio), el contexto (entorno), el problema (situación central) y los datos (evidencias recopiladas)." }
+    ]
+  },
+  {
+    id: 12,
+    text: "¿Cuál de las siguientes situaciones hace al estudio de caso el método más adecuado?",
+    options: [
+      { text: "Cuando la investigación requiere un diseño experimental", correct: false, feedback: "Incorrecto. Un diseño experimental requiere control de variables y grupos de comparación, lo que es ajeno al estudio de caso." },
+      { text: "Cuando se investiga un fenómeno complejo en un contexto poco conocido", correct: true, feedback: "¡Correcto! El estudio de caso es ideal para fenómenos complejos en contextos poco conocidos, donde se requiere exploración profunda y comprensión del entorno." },
+      { text: "Cuando se busca generalizar a casos múltiples con datos repetibles", correct: false, feedback: "Incorrecto. La generalización y los datos repetibles son propósitos del paradigma cuantitativo, no del estudio de caso." },
+      { text: "Cuando el fenómeno puede medirse con instrumentos estandarizados", correct: false, feedback: "Incorrecto. Si el fenómeno se mide con instrumentos estandarizados, probablemente corresponde a un enfoque cuantitativo." }
+    ]
+  },
+  {
+    id: 13,
+    text: "¿Cuáles son las secciones clave que estructuran el informe final de un estudio de caso?",
+    options: [
+      { text: "Objetivo, cronograma, presupuesto y resultados", correct: false, feedback: "Incorrecto. Esa estructura corresponde a un plan o proyecto, no al informe final de investigación." },
+      { text: "Resumen, gráficas, tablas y bibliografía", correct: false, feedback: "Incorrecto. Aunque algunos de estos elementos pueden aparecer, no son las secciones estructurales del informe de estudio de caso." },
+      { text: "Introducción, marco teórico, metodología, análisis y conclusiones", correct: true, feedback: "¡Correcto! El informe de estudio de caso se estructura con: introducción, marco teórico, metodología, análisis de datos y conclusiones." },
+      { text: "Planteamiento, hipótesis, experimento y conclusión", correct: false, feedback: "Incorrecto. La hipótesis y el experimento pertenecen al diseño cuantitativo/experimental." }
+    ]
+  },
+  {
+    id: 14,
+    isCase: true,
+    caseText: CASO_TEXTO,
+    text: "¿Cuál sería la primera fase correcta para abordar este estudio de caso?",
+    options: [
+      { text: "Construir el marco teórico sin revisar el contexto", correct: false, feedback: "Incorrecto. El marco teórico es una fase posterior. Primero debe seleccionarse y definirse el caso claramente." },
+      { text: "Procesar y analizar los datos de inmediato", correct: false, feedback: "Incorrecto. No es posible analizar datos antes de haberlos recolectado, y para recolectarlos primero hay que definir el caso." },
+      { text: "Elaborar el informe final con las conclusiones", correct: false, feedback: "Incorrecto. El informe final es la última fase; no puede elaborarse sin haber pasado por las fases anteriores." },
+      { text: "Seleccionar y definir el caso: identificar claramente la situación que se va a estudiar", correct: true, feedback: "¡Correcto! La primera fase es seleccionar y definir el caso. En este ejemplo: 'una alumna ejemplar cuyas calificaciones han bajado en el último trimestre'." }
+    ]
+  },
+  {
+    id: 15,
+    isCase: true,
+    caseText: CASO_TEXTO,
+    caseLabel: "Continuando con el mismo caso:",
+    text: "¿Cuáles serían las fuentes de datos más apropiadas para localizar información?",
+    options: [
+      { text: "Solo las pruebas estandarizadas aplicadas a la alumna", correct: false, feedback: "Incorrecto. Las pruebas estandarizadas son instrumentos cuantitativos. El estudio de caso requiere diversas fuentes cualitativas." },
+      { text: "Exclusivamente la opinión de sus compañeros de clase", correct: false, feedback: "Incorrecto. Usar una sola fuente contradice el principio de triangulación que caracteriza al estudio de caso." },
+      { text: "Familia, parientes, amigos, profesores y bibliografía especializada", correct: true, feedback: "¡Correcto! El estudio de caso utiliza triangulación de datos: en este caso, familia, parientes, amigos, profesores y bibliografía son las fuentes múltiples que permiten un análisis completo." },
+      { text: "Únicamente los registros académicos oficiales de la alumna", correct: false, feedback: "Incorrecto. Los registros académicos ofrecen solo una perspectiva parcial. El estudio de caso requiere múltiples fuentes para triangular la información." }
+    ]
+  }
+];
+
+// ═══════════════════════════════════════════════════
+//  ESTADO
+// ═══════════════════════════════════════════════════
+let answered = new Array(15).fill(null); // null | true | false
+let score = 0;
+
+// ═══════════════════════════════════════════════════
+//  FISHER-YATES SHUFFLE
+// ═══════════════════════════════════════════════════
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// ═══════════════════════════════════════════════════
+//  LETRAS
+// ═══════════════════════════════════════════════════
+const LETTERS = ['a', 'b', 'c', 'd'];
+
+// ═══════════════════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════════════════
+function buildQuiz() {
+  const container = document.getElementById('questionsContainer');
+  container.innerHTML = '';
+
+  QUESTIONS.forEach((q, qi) => {
+    const shuffledOptions = shuffle(q.options);
+
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.id = `card-${qi}`;
+    card.style.animationDelay = `${qi * 0.05}s`;
+
+    let caseHTML = '';
+    if (q.isCase) {
+      const label = q.caseLabel || '📋 Caso:';
+      caseHTML = `<div class="case-box"><span class="case-label">${label}</span>${q.caseText}</div>`;
+    }
+
+    const optionsHTML = shuffledOptions.map((opt, oi) => {
+      return `<button class="option-btn" id="opt-${qi}-${oi}" onclick="handleAnswer(${qi}, ${oi}, ${opt.correct}, \`${escapeText(opt.feedback)}\`)">
+        <span class="option-letter">${LETTERS[oi]})</span>
+        <span>${opt.text}</span>
+      </button>`;
+    }).join('');
+
+    card.innerHTML = `
+      <div class="q-number">Reactivo ${q.id} / 15</div>
+      ${caseHTML}
+      <div class="q-text">${q.text}</div>
+      <div class="options-list" id="opts-${qi}">
+        ${optionsHTML}
+      </div>
+      <div class="feedback-box" id="fb-${qi}"></div>
+    `;
+
+    container.appendChild(card);
+  });
+
+  buildPills();
+  updateScore();
+}
+
+function escapeText(str) {
+  return str.replace(/`/g, "'").replace(/\\/g, '\\\\');
+}
+
+// ═══════════════════════════════════════════════════
+//  INTERACCIÓN
+// ═══════════════════════════════════════════════════
+function handleAnswer(qi, oi, isCorrect, feedback) {
+  if (answered[qi] !== null) return; // ya respondida
+
+  answered[qi] = isCorrect;
+  if (isCorrect) score++;
+
+  const card = document.getElementById(`card-${qi}`);
+  const fb   = document.getElementById(`fb-${qi}`);
+  const opts = document.querySelectorAll(`#opts-${qi} .option-btn`);
+
+  // Deshabilitar todas las opciones
+  opts.forEach(btn => btn.disabled = true);
+
+  // Marcar la seleccionada
+  const selected = document.getElementById(`opt-${qi}-${oi}`);
+  if (isCorrect) {
+    selected.classList.add('correct');
+    card.classList.add('answered-correct');
+  } else {
+    selected.classList.add('wrong');
+    card.classList.add('answered-wrong');
+    // Revelar la correcta
+    opts.forEach(btn => {
+      if (!btn.classList.contains('wrong')) {
+        // Verificar si este botón era el correcto
+        const btnText = btn.querySelector('span:last-child').textContent;
+        const qOpts = QUESTIONS[qi].options;
+        const match = qOpts.find(o => o.correct && o.text === btnText);
+        if (match) btn.classList.add('reveal-correct');
+      }
+    });
+  }
+
+  // Mostrar feedback
+  const icon = isCorrect ? '✅' : '❌';
+  fb.innerHTML = `<span class="feedback-icon">${icon}</span>${feedback}`;
+  fb.className = `feedback-box show ${isCorrect ? 'fb-correct' : 'fb-wrong'}`;
+
+  updateScore();
+  updatePill(qi, isCorrect);
+
+  // Verificar si se completó el quiz
+  const totalAnswered = answered.filter(a => a !== null).length;
+  if (totalAnswered === 15) {
+    setTimeout(showResults, 800);
+  }
+}
+
+// ═══════════════════════════════════════════════════
+//  PILLS Y SCORE
+// ═══════════════════════════════════════════════════
+function buildPills() {
+  const container = document.getElementById('scorePills');
+  container.innerHTML = '';
+  for (let i = 0; i < 15; i++) {
+    const pill = document.createElement('div');
+    pill.className = 'pill';
+    pill.id = `pill-${i}`;
+    pill.textContent = i + 1;
+    container.appendChild(pill);
+  }
+}
+
+function updatePill(qi, isCorrect) {
+  const pill = document.getElementById(`pill-${qi}`);
+  if (pill) {
+    pill.classList.add(isCorrect ? 'correct' : 'wrong');
+    pill.textContent = isCorrect ? '✓' : '✗';
+  }
+}
+
+function updateScore() {
+  const el = document.getElementById('scoreCount');
+  if (el) el.textContent = `${score} / 15`;
+}
+
+// ═══════════════════════════════════════════════════
+//  RESULTADO FINAL
+// ═══════════════════════════════════════════════════
+function showResults() {
+  const card      = document.getElementById('resultadoCard');
+  const scoreEl   = document.getElementById('resultScore');
+  const starsEl   = document.getElementById('resultStars');
+  const msgEl     = document.getElementById('resultMsg');
+  const resetCont = document.getElementById('resetContainer');
+
+  if (!card || !scoreEl || !starsEl || !msgEl || !resetCont) return;
+
+  scoreEl.innerHTML = `${score} <span>/ 15</span>`;
+  card.classList.add('show');
+  resetCont.style.display = 'block';
+
+  const pct = score / 15;
+  let stars, msg;
+
+  if (pct === 1) {
+    stars = '★★★';
+    msg = '¡Perfecto! Dominas completamente los conceptos del estudio de caso. ¡Excelente trabajo!';
+  } else if (pct >= 0.8) {
+    stars = '★★☆';
+    msg = '¡Muy bien! Tienes un sólido manejo de los conceptos. Repasa los reactivos que fallaste para lograr el 100%.';
+  } else if (pct >= 0.6) {
+    stars = '★☆☆';
+    msg = 'Buen esfuerzo. Hay algunos conceptos que necesitan refuerzo. Revisa el material y vuelve a intentarlo.';
+  } else {
+    stars = '☆☆☆';
+    msg = 'Necesitas repasar el material. No te desanimes: revisa las diapositivas de la sesión e inténtalo de nuevo.';
+  }
+
+  starsEl.textContent = stars;
+  msgEl.textContent   = msg;
+
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// ═══════════════════════════════════════════════════
+//  RESET
+// ═══════════════════════════════════════════════════
+function resetQuiz() {
+  answered = new Array(15).fill(null);
+  score = 0;
+
+  document.getElementById('resultadoCard').classList.remove('show');
+  document.getElementById('resetContainer').style.display = 'none';
+
+  buildQuiz();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ═══════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', buildQuiz);
+</script>
+</body>
+</html>
